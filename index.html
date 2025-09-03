@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agendamento - BDV</title>
+<title>Agendamento BDV</title>
 <style>
 body{font-family:Arial;background:#121212;color:#fff;text-align:center;margin:0;padding:0;}
 .container{padding:20px;max-width:400px;margin:auto;}
 label{display:block;margin-top:15px;text-align:left;}
 input,select,button{width:100%;padding:10px;margin-top:5px;border-radius:5px;border:none;font-size:16px;}
 button{background:#FFD700;color:#000;font-weight:bold;cursor:pointer;margin-top:20px;}
+.success{background:#28a745;color:#fff;padding:10px;margin-top:10px;border-radius:5px;display:none;}
 </style>
 </head>
 <body>
@@ -31,7 +32,7 @@ button{background:#FFD700;color:#000;font-weight:bold;cursor:pointer;margin-top:
     <input type="date" id="data" required>
 
     <label>Hora:</label>
-    <input type="time" id="hora" required>
+    <select id="hora" required></select>
 
     <label>Nome:</label>
     <input type="text" id="nome" required>
@@ -42,36 +43,60 @@ button{background:#FFD700;color:#000;font-weight:bold;cursor:pointer;margin-top:
     <button type="submit">Agendar</button>
   </form>
 
-  <p id="msg"></p>
+  <div class="success" id="successMsg">Agendamento realizado com sucesso!</div>
 </div>
 
 <script>
-// 👉 Troque pelo link do seu Web App do Google Apps Script
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbzKc3iCmYgr38O0qQ-f8omMnntCkETTOI-xUwdjvlFwzBUIJ0tX00DQ8B0jcpn4PIM_cw/exec";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbzlwqGajnVZZv0ubt8XrCGBe4SL6_2RJTCtF9_Q3wgzBpq1l620Pm1dtv_o64anz6tJLw/exec"; // substitua pelo link do Web App
+const horasDisponiveis = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00"];
 
-document.getElementById("form").addEventListener("submit", async(e)=>{
+const dataInput = document.getElementById("data");
+const horaSelect = document.getElementById("hora");
+const form = document.getElementById("form");
+const successMsg = document.getElementById("successMsg");
+
+dataInput.addEventListener("change", async () => {
+  horaSelect.innerHTML = "<option value=''>Selecione</option>";
+  try {
+    const res = await fetch(SHEET_URL + "?action=getHorarios");
+    const ocupados = await res.json();
+    let diaHorarios = horasDisponiveis;
+    if (ocupados[dataInput.value]) {
+      diaHorarios = horasDisponiveis.filter(h => !ocupados[dataInput.value].includes(h));
+    }
+    diaHorarios.forEach(h => {
+      const option = document.createElement("option");
+      option.value = h;
+      option.textContent = h;
+      horaSelect.appendChild(option);
+    });
+  } catch {
+    alert("Erro ao buscar horários ocupados.");
+  }
+});
+
+form.addEventListener("submit", async e => {
   e.preventDefault();
-  let dados = {
+  const dados = {
     servico: servico.value,
-    data: data.value,
-    hora: hora.value,
+    data: dataInput.value,
+    hora: horaSelect.value,
     nome: nome.value,
     telefone: telefone.value
   };
-  try{
-    let res = await fetch(URL,{
-      method:"POST",
-      body:JSON.stringify(dados)
-    });
-    let r = await res.json();
+  try {
+    const res = await fetch(SHEET_URL, { method:"POST", body:JSON.stringify(dados) });
+    const r = await res.json();
     if(r.status==="success"){
-      msg.textContent = "✅ Agendamento realizado!";
+      successMsg.style.display="block";
       form.reset();
+      horaSelect.innerHTML = "<option value=''>Selecione</option>";
+      setTimeout(()=>{successMsg.style.display="none"},3000);
     } else {
-      msg.textContent = "❌ Erro no agendamento.";
+      alert(r.mensagem);
     }
-  }catch{
-    msg.textContent = "❌ Erro de conexão.";
+  } catch {
+    alert("Erro ao conectar com a planilha.");
   }
 });
 </script>
