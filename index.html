@@ -22,10 +22,15 @@ button{background:#FFD700;color:#000;font-weight:bold;cursor:pointer;margin-top:
     <label>Serviço:</label>
     <select id="servico" required>
       <option value="">Selecione</option>
-      <option value="Corte Simples">Corte Simples - 30min</option>
-      <option value="Barba">Barba - 30min</option>
-      <option value="Corte Fade">Corte Fade - 40min</option>
-      <option value="Corte + Barba">Corte + Barba - 60min</option>
+      <option value="Barba">Barba - R$20,00</option>
+      <option value="Cabelo (1 máquina)">Cabelo - R$30,00</option>
+      <option value="Sobrancelha">Sobrancelha - R$10,00</option>
+      <option value="Pezinho (contorno)">Pezinho - R$10,00</option>
+      <option value="Corte">Corte - R$35,00</option>
+      <option value="Combo (cabelo + barba + sobrancelha)">Combo</option>
+      <option value="Pigmentação">Pigmentação - R$15,00</option>
+      <option value="Corte + Pigmentação">Corte + Pigmentação - R$45,00</option>
+      <option value="Corte de Atípicos">Corte de Atípicos - R$50,00</option>
     </select>
 
     <label>Data:</label>
@@ -47,7 +52,7 @@ button{background:#FFD700;color:#000;font-weight:bold;cursor:pointer;margin-top:
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbzlwqGajnVZZv0ubt8XrCGBe4SL6_2RJTCtF9_Q3wgzBpq1l620Pm1dtv_o64anz6tJLw/exec"; // substitua pelo link do Web App
+const SHEET_URL = "COLE_AQUI_O_URL_DO_WEB_APP"; // substitua pelo link do Web App
 const horasDisponiveis = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30","18:00"];
 
 const dataInput = document.getElementById("data");
